@@ -1,7 +1,7 @@
 {
   "appId": "com.docket.app",
   "appName": "Docket",
-  "webDir": ".",
+  "webDir": "www",
   "server": {
     "androidScheme": "https"
   },
