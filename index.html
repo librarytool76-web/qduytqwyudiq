@@ -1,0 +1,476 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="voice.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{filter:brightness(var(--brightness,1));transition:filter .2s}
+body{font-family:system-ui,-apple-system,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;background:#f5f0e8;color:#1a1000;transition:background .3s,color .3s}
+body.dark{background:#121212;color:#E8E1D5}
+.app{max-width:390px;margin:0 auto;padding-bottom:90px}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;position:sticky;top:0;z-index:20;background:#f5f0e8;border-bottom:1.5px solid #d9b880;transition:background .3s,border-color .3s}
+body.dark .topbar{background:#0e0a00;border-color:#4a3200}
+.app-title{font-size:17px;font-weight:700;color:#b85c00}
+body.dark .app-title{color:#fbbf24}
+.icon-btn{width:38px;height:38px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;border:1.5px solid #c8a060;background:#fff8ee;transition:background .2s}
+.icon-btn i{font-size:20px;color:#3a2000}
+body.dark .icon-btn{background:#2c1e00;border-color:#6a4a00}
+body.dark .icon-btn i{color:#fde68a}
+.icon-btn:hover{background:#ffe0a0}
+body.dark .icon-btn:hover{background:#3a2800}
+
+.hero{padding:20px 20px 0}
+.greeting{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#8a5c1a;margin-bottom:4px}
+body.dark .greeting{color:#d4a017}
+.today-label{font-size:22px;font-weight:700;color:#1a1000}
+body.dark .today-label{color:#fef3c7}
+
+.progress-section{margin:16px 20px 0;border-radius:16px;padding:18px 20px;background:#b85c00}
+body.dark .progress-section{background:#c96800}
+.progress-title{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,0.9)}
+.progress-pct{font-size:30px;font-weight:700;color:#fff;margin-top:4px;margin-bottom:14px}
+.progress-bar-bg{background:rgba(255,255,255,0.3);border-radius:100px;height:6px}
+.progress-bar-fill{background:#fff;border-radius:100px;height:6px;transition:width .5s}
+.progress-sub{font-size:12px;color:rgba(255,255,255,0.9);margin-top:8px}
+
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 20px 0}
+.stat-card{border-radius:14px;padding:16px;border:1.5px solid #d9b880;background:#ffffff}
+body.dark .stat-card{background:#1e1500;border-color:#3a2800}
+.stat-num{font-size:26px;font-weight:700;color:#0a6b63}
+body.dark .stat-num{color:#2dd4bf}
+.stat-num.amber{color:#b85c00}
+body.dark .stat-num.amber{color:#fbbf24}
+.stat-lbl{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#3a2000;margin-top:4px}
+body.dark .stat-lbl{color:#fde68a}
+
+/* ── TABS ── */
+.tabs{display:flex;margin:16px 20px 0;gap:10px}
+.tab{flex:1;text-align:center;padding:10px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;border:1.5px solid #c8a060;background:#f0e4c8;
+  color:#2D2D2D;} /* LIGHT: #2D2D2D */
+body.dark .tab{background:#1E1E1E;border-color:#3A3A3A;
+  color:#E8E1D5;} /* DARK: visible inactive tab */
+.tab.active{background:#0a6b63;border-color:#0a6b63;color:#ffffff;}
+body.dark .tab.active{background:#2dd4bf;border-color:#2dd4bf;color:#04201e;}
+
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 10px}
+.section-title{font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1a1000}
+body.dark .section-title{color:#fef3c7}
+
+/* ── ADD BUTTON ── */
+.add-btn{display:flex;align-items:center;gap:5px;background:#0a6b63;border:none;border-radius:20px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;
+  color:#2D2D2D;} /* LIGHT: #2D2D2D — but teal bg is dark so we need white; overridden below */
+/* Teal background is dark enough that #2D2D2D won't contrast — use white in both modes */
+.add-btn{color:#ffffff;}
+body.dark .add-btn{color:#ffffff;}
+.add-btn i{font-size:15px;color:#ffffff;}
+.add-btn:hover{opacity:.85}
+
+.task-list{padding:0 20px;display:flex;flex-direction:column;gap:10px}
+.task-item{display:flex;align-items:center;gap:12px;background:#ffffff;border:1.5px solid #d9b880;border-radius:14px;padding:14px}
+body.dark .task-item{background:#1e1500;border-color:#3a2800}
+.task-item.done{opacity:.5}
+.task-item.done .task-name{text-decoration:line-through}
+.task-check{width:24px;height:24px;border-radius:6px;border:2px solid #c8a060;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+body.dark .task-check{border-color:#6a4a00}
+.task-check i{font-size:14px;color:transparent}
+.task-check.checked{background:#0a6b63;border-color:#0a6b63}
+body.dark .task-check.checked{background:#2dd4bf;border-color:#2dd4bf}
+.task-check.checked i{color:#fff}
+body.dark .task-check.checked i{color:#04201e}
+.task-body{flex:1;min-width:0}
+.task-name{font-size:14px;font-weight:600;color:#1a1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.dark .task-name{color:#fef3c7}
+.task-meta{font-size:11px;color:#7a5010;margin-top:4px;display:flex;align-items:center;gap:6px}
+body.dark .task-meta{color:#d4a017}
+.prio-pill{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700}
+.prio-high{background:#fee2e2;color:#7f1d1d}
+.prio-mid{background:#fff3e0;color:#7a3d00}
+.prio-low{background:#d0f5ef;color:#084e49}
+body.dark .prio-high{background:#3b0a0a;color:#fecaca}
+body.dark .prio-mid{background:#2c1e00;color:#fef3c7}
+body.dark .prio-low{background:#0a2420;color:#99f6e4}
+.task-del{background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:4px;border-radius:6px}
+.task-del i{font-size:16px;color:#a07030}
+body.dark .task-del i{color:#d4a017}
+.task-del:hover i{color:#b91c1c}
+body.dark .task-del:hover i{color:#f87171}
+
+.empty-state{text-align:center;padding:40px 20px}
+.empty-state i{font-size:34px;display:block;margin-bottom:10px;color:#c8a060}
+body.dark .empty-state i{color:#6a4a00}
+.empty-state p{font-size:13px;line-height:1.7;color:#4a2e00}
+body.dark .empty-state p{color:#fde68a}
+
+.brightness-panel{margin:16px 20px 0;background:#ffffff;border:1.5px solid #d9b880;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+body.dark .brightness-panel{background:#1e1500;border-color:#3a2800}
+.brightness-panel i{font-size:18px;color:#b85c00;flex-shrink:0}
+body.dark .brightness-panel i{color:#fbbf24}
+.brightness-label{font-size:12px;font-weight:700;color:#3a2000;white-space:nowrap}
+body.dark .brightness-label{color:#fde68a}
+input[type=range]{flex:1;accent-color:#b85c00;height:4px;cursor:pointer}
+body.dark input[type=range]{accent-color:#fbbf24}
+.brightness-val{font-size:12px;font-weight:700;color:#3a2000;width:34px;text-align:right}
+body.dark .brightness-val{color:#fde68a}
+
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:50;display:none;align-items:flex-end;pointer-events:none}
+.modal-overlay.open{pointer-events:all}
+.modal-overlay.open{display:flex}
+.modal{background:#fff8ee;border-radius:24px 24px 0 0;padding:24px 20px 28px;width:100%}
+body.dark .modal{background:#120d00}
+.modal-handle{width:40px;height:4px;background:#d9b880;border-radius:2px;margin:0 auto 22px}
+body.dark .modal-handle{background:#3a2800}
+.modal-title{font-size:18px;font-weight:700;color:#1a1000;margin-bottom:20px}
+body.dark .modal-title{color:#fef3c7}
+.form-label{font-size:11px;font-weight:700;color:#7a5010;margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.6px}
+body.dark .form-label{color:#d4a017}
+.form-input{width:100%;padding:12px 14px;border:1.5px solid #d9b880;border-radius:10px;background:#f5f0e8;color:#1a1000;font-size:14px;margin-bottom:16px;outline:none;font-family:inherit;transition:border .2s}
+body.dark .form-input{background:#1e1500;border-color:#3a2800;color:#fef3c7}
+.form-input:focus{border-color:#b85c00}
+body.dark .form-input:focus{border-color:#fbbf24}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.form-row .form-input{margin-bottom:0}
+.btn-primary{width:100%;padding:14px;background:#b85c00;color:#ffffff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
+body.dark .btn-primary{background:#fbbf24;color:#1a0e00}
+.btn-primary:hover{opacity:.88}
+.btn-cancel{width:100%;padding:12px;background:#f0e4c8;color:#2D2D2D;border:1.5px solid #d9b880;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px}
+body.dark .btn-cancel{background:#2c1e00;color:#fde68a;border-color:#4a3200}
+
+.settings-view{padding:20px}
+.s-head{font-size:22px;font-weight:700;color:#1a1000;margin-bottom:24px;margin-top:8px}
+body.dark .s-head{color:#fef3c7}
+.settings-section{margin-bottom:24px}
+.settings-section-title{font-size:11px;font-weight:700;color:#7a5010;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+body.dark .settings-section-title{color:#d4a017}
+.settings-card{background:#ffffff;border:1.5px solid #d9b880;border-radius:14px;overflow:hidden}
+body.dark .settings-card{background:#1e1500;border-color:#3a2800}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-bottom:1px solid #d9b880}
+body.dark .settings-row{border-color:#3a2800}
+.settings-row:last-child{border-bottom:none}
+.s-title{font-size:14px;font-weight:600;color:#1a1000}
+body.dark .s-title{color:#fef3c7}
+.s-sub{font-size:12px;color:#7a5010;margin-top:3px}
+body.dark .s-sub{color:#d4a017}
+
+/* ── CLEAR ALL TASKS — fixed: explicit red in both modes ── */
+.danger-row .s-title{color:#b91c1c !important;font-weight:700}
+body.dark .danger-row .s-title{color:#f87171 !important;font-weight:700}
+.danger-row .s-sub{color:#b91c1c !important;opacity:.7}
+body.dark .danger-row .s-sub{color:#f87171 !important;opacity:.7}
+
+.toggle{width:46px;height:27px;background:#c8a060;border-radius:100px;position:relative;cursor:pointer;transition:background .2s;border:none;flex-shrink:0}
+body.dark .toggle{background:#4a3200}
+.toggle.on{background:#0a6b63}
+body.dark .toggle.on{background:#2dd4bf}
+.toggle::after{content:'';position:absolute;width:21px;height:21px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .2s}
+.toggle.on::after{left:22px}
+
+.nav-bar{position:sticky;bottom:0;display:flex;background:#ffffff;border-top:1.5px solid #d9b880;z-index:30;transition:background .3s}
+body.dark .nav-bar{background:#0e0a00;border-color:#3a2800}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:11px 0 15px;cursor:pointer;border:none;background:none;gap:4px}
+.nav-item i{font-size:22px;color:#5a3a10;transition:color .2s}
+.nav-item span{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#5a3a10;transition:color .2s}
+body.dark .nav-item i{color:#fde68a}
+body.dark .nav-item span{color:#fde68a}
+.nav-item.active i{color:#b85c00}
+.nav-item.active span{color:#b85c00}
+body.dark .nav-item.active i{color:#fbbf24}
+body.dark .nav-item.active span{color:#fbbf24}
+
+.alert-modal{background:#fff8ee;border-radius:24px 24px 0 0;padding:28px 20px;width:100%}
+body.dark .alert-modal{background:#120d00}
+.view{display:none}
+.view.active{display:block}
+.mode-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#e8d8b0;color:#3a2000;margin-left:8px;vertical-align:middle}
+body.dark .mode-badge{background:#3a2800;color:#fde68a}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<div class="topbar">
+  <button class="icon-btn" onclick="toggleDark()" aria-label="Toggle dark mode">
+    <i class="ti ti-sun" id="darkIcon"></i>
+  </button>
+  <span class="app-title">✦ Docket</span>
+  <button class="icon-btn" onclick="switchView('settings')" aria-label="Settings" id="navToggleBtn">
+    <i class="ti ti-settings" id="navToggleIcon"></i>
+  </button>
+</div>
+
+<div class="view active" id="view-dashboard">
+  <div class="hero">
+    <div class="greeting" id="greeting">Good afternoon</div>
+    <div class="today-label" id="todayLabel">Saturday, Jun 20</div>
+  </div>
+
+  <div class="brightness-panel">
+    <i class="ti ti-brightness-half"></i>
+    <span class="brightness-label">Brightness</span>
+    <input type="range" id="brightnessSlider" min="40" max="100" value="100" oninput="setBrightness(this.value)">
+    <span class="brightness-val" id="brightnessVal">100%</span>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-title">Daily progress</div>
+    <div class="progress-pct" id="pct">0%</div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="pctBar" style="width:0%"></div></div>
+    <div class="progress-sub" id="pctSub">Start checking things off!</div>
+  </div>
+
+  <div class="voice-container">
+    <button id="voiceBtn" class="voice-btn">
+      <i class="ti ti-microphone"></i>
+      Speak to Me
+    </button>
+    <div id="voiceStatus" class="voice-status">Ready</div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-num" id="sDone">0</div><div class="stat-lbl">Completed</div></div>
+    <div class="stat-card"><div class="stat-num amber" id="sPending">0</div><div class="stat-lbl">Pending</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-daily" onclick="switchTab('daily')">Daily tasks</button>
+    <button class="tab" id="tab-weekly" onclick="switchTab('weekly')">Weekly tasks</button>
+  </div>
+
+  <div id="daily-section">
+    <div class="section-header">
+      <span class="section-title">Today</span>
+      <button class="add-btn" onclick="openAdd('daily')"><i class="ti ti-plus"></i> Add</button>
+    </div>
+    <div class="task-list" id="daily-list"></div>
+  </div>
+  <div id="weekly-section" style="display:none">
+    <div class="section-header">
+      <span class="section-title">This week</span>
+      <button class="add-btn" onclick="openAdd('weekly')"><i class="ti ti-plus"></i> Add</button>
+    </div>
+    <div class="task-list" id="weekly-list"></div>
+  </div>
+</div>
+
+<div class="view" id="view-settings">
+  <div class="settings-view">
+    <div class="s-head">Settings</div>
+    <div class="settings-section">
+      <div class="settings-section-title">Appearance</div>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div><div class="s-title">Dark mode</div><div class="s-sub">Override system theme</div></div>
+          <button class="toggle" id="toggle-dark-s" onclick="manualToggleDark()" aria-label="Toggle dark mode"></button>
+        </div>
+        <div class="settings-row">
+          <div style="flex:1">
+            <div class="s-title">Brightness</div>
+            <div class="s-sub">Adjust display brightness</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+              <i class="ti ti-brightness-half" style="font-size:16px;color:#b85c00"></i>
+              <input type="range" id="brightnessSlider2" min="40" max="100" value="100" oninput="setBrightness(this.value)" style="flex:1;accent-color:#b85c00">
+              <span class="brightness-val" id="brightnessVal2">100%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Notifications</div>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div><div class="s-title">Task alerts</div><div class="s-sub">Notify when a task is completed</div></div>
+          <button class="toggle on" id="toggle-complete" onclick="toggleSetting('complete')"></button>
+        </div>
+        <div class="settings-row">
+          <div><div class="s-title">Overdue reminders</div><div class="s-sub">Alert on pending daily tasks</div></div>
+          <button class="toggle" id="toggle-overdue" onclick="toggleSetting('overdue')"></button>
+        </div>
+        <div class="settings-row">
+          <div><div class="s-title">Daily summary</div><div class="s-sub">End-of-day progress recap</div></div>
+          <button class="toggle on" id="toggle-summary" onclick="toggleSetting('summary')"></button>
+        </div>
+        <div class="settings-row">
+          <div><div class="s-title">Upcoming task notifications</div><div class="s-sub">Reminder 1 hr &amp; 5 min before task time</div></div>
+          <button class="toggle" id="toggle-upcomingNotif" onclick="toggleSetting('upcomingNotif')"></button>
+        </div>
+        <div class="settings-row">
+          <div><div class="s-title">Voice Guidance</div><div class="s-sub">Spoken instructions for voice commands</div></div>
+          <button class="toggle on" id="toggle-voiceGuidance" onclick="toggleSetting('voiceGuidance')"></button>
+        </div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Data</div>
+      <div class="settings-card">
+        <div class="settings-row danger-row" style="cursor:pointer" onclick="clearAll()">
+          <div>
+            <div class="s-title">Clear all tasks</div>
+            <div class="s-sub">Remove everything from all lists</div>
+          </div>
+          <i class="ti ti-trash" style="font-size:18px;color:#b91c1c"></i>
+        </div>
+      </div>
+    </div>
+    <button class="btn-cancel" onclick="switchView('dashboard')" style="margin-top:4px">
+      <i class="ti ti-arrow-left" style="font-size:14px;vertical-align:-1px;margin-right:5px"></i>Back to tasks
+    </button>
+  </div>
+</div>
+
+
+
+<div class="modal-overlay" id="addModal" onclick="closeModalOutside(event)">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-handle"></div>
+    <div class="modal-title">New task</div>
+    <label class="form-label" for="t-name">Task name</label>
+    <input class="form-input" id="t-name" placeholder="What needs to get done?" maxlength="80">
+    <label class="form-label" for="t-time">Time (optional)</label>
+    <input class="form-input" id="t-time" type="time">
+    <div class="form-row">
+      <div>
+        <label class="form-label" for="t-prio">Priority</label>
+        <select class="form-input" id="t-prio" style="margin-bottom:0">
+          <option value="high">High</option>
+          <option value="mid" selected>Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label" for="t-type">List</label>
+        <select class="form-input" id="t-type" style="margin-bottom:0">
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="saveTask()" style="margin-top:16px">Save task</button>
+    <button class="btn-cancel" onclick="closeAdd()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="alertModal">
+  <div class="alert-modal" role="dialog" aria-modal="true">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;padding:8px 0 20px">
+      <div style="font-size:40px;margin-bottom:12px" id="alertIcon">✅</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:6px" id="alertTitle">Done!</div>
+      <div style="font-size:13px" id="alertMsg">Keep it up.</div>
+    </div>
+    <button class="btn-primary" onclick="closeAlert()">Dismiss</button>
+  </div>
+</div>
+
+</div>
+<script>
+let tasks=JSON.parse(localStorage.getItem('do_tasks')||'null')||[
+  {id:1,name:'Morning run',type:'daily',prio:'high',time:'07:00',done:false},
+  {id:2,name:'Review emails',type:'daily',prio:'mid',time:'09:00',done:true},
+  {id:3,name:'Plan the week',type:'daily',prio:'low',time:'',done:false},
+  {id:4,name:'Finish project report',type:'weekly',prio:'high',time:'',done:false},
+  {id:5,name:'Grocery shopping',type:'weekly',prio:'mid',time:'',done:true},
+  {id:6,name:'Call family',type:'weekly',prio:'low',time:'',done:false},
+];
+let cfg=JSON.parse(localStorage.getItem('do_cfg6')||'null')||{complete:true,overdue:false,summary:true,upcomingNotif:false,voiceGuidance:true,darkOverride:null,brightness:100};
+let nid=Math.max(0,...tasks.map(t=>t.id))+1;
+let activeTab='daily';
+function save(){localStorage.setItem('do_tasks',JSON.stringify(tasks));localStorage.setItem('do_cfg6',JSON.stringify(cfg));}
+function isSystemDark(){return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;}
+function applyTheme(){
+  const useDark=cfg.darkOverride!==null?cfg.darkOverride:isSystemDark();
+  document.body.classList.toggle('dark',useDark);
+  const icon=document.getElementById('darkIcon');if(icon)icon.className=useDark?'ti ti-moon':'ti ti-sun';
+  const badge=document.getElementById('modeBadge');if(badge)badge.textContent=useDark?'Dark':'Light';
+  const ds=document.getElementById('toggle-dark-s');if(ds)ds.className='toggle'+(useDark?' on':'');
+}
+function manualToggleDark(){cfg.darkOverride=!document.body.classList.contains('dark');applyTheme();save();}
+function toggleDark(){manualToggleDark();}
+if(window.matchMedia){window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(cfg.darkOverride===null)applyTheme();});}
+function setBrightness(val){
+  cfg.brightness=parseInt(val);
+  document.documentElement.style.setProperty('--brightness',cfg.brightness/100);
+  ['brightnessVal','brightnessVal2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=val+'%';});
+  ['brightnessSlider','brightnessSlider2'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=val;});
+  save();
+}
+function greet(){
+  const h=new Date().getHours();
+  const g=document.getElementById('greeting');if(g)g.textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  const l=document.getElementById('todayLabel');if(l)l.textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+}
+function updateStats(){
+  const daily=tasks.filter(t=>t.type==='daily');
+  const dDone=daily.filter(t=>t.done).length,tot=daily.length,pct=tot?Math.round((dDone/tot)*100):0;
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('pctBar').style.width=pct+'%';
+  document.getElementById('sDone').textContent=tasks.filter(t=>t.done).length;
+  document.getElementById('sPending').textContent=tasks.filter(t=>!t.done).length;
+  const sub=document.getElementById('pctSub');
+  if(sub){if(pct===0)sub.textContent='Start checking things off!';else if(pct<50)sub.textContent=dDone+' of '+tot+' done — keep going!';else if(pct<100)sub.textContent='More than halfway there!';else sub.textContent='All daily tasks done today! 🎉';}
+}
+function prioPill(p){return p==='high'?'<span class="prio-pill prio-high">High</span>':p==='mid'?'<span class="prio-pill prio-mid">Medium</span>':'<span class="prio-pill prio-low">Low</span>';}
+function escH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderList(type){
+  const el=document.getElementById(type+'-list');if(!el)return;
+  const items=tasks.filter(t=>t.type===type);
+  if(!items.length){el.innerHTML='<div class="empty-state"><i class="ti ti-circle-dashed"></i><p>No '+type+' tasks yet.<br>Tap <strong>Add</strong> to get started.</p></div>';return;}
+  el.innerHTML=items.map(t=>`<div class="task-item${t.done?' done':''}"><button class="task-check${t.done?' checked':''}" onclick="toggle(${t.id})" aria-label="${t.done?'Undo':'Complete'}"><i class="ti ti-check"></i></button><div class="task-body"><div class="task-name">${escH(t.name)}</div><div class="task-meta">${t.time?'<i class="ti ti-clock"></i> '+t.time+' ':''} ${prioPill(t.prio)}</div></div><button class="task-del" onclick="del(${t.id})" aria-label="Delete"><i class="ti ti-x"></i></button></div>`).join('');
+}
+function render(){renderList('daily');renderList('weekly');updateStats();}
+function toggle(id){const t=tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;save();render();if(cfg.complete)showAlert(t.done?'🎯':'↩️',t.done?'Task complete!':'Task reopened','"'+t.name+'"'+(t.done?' is done.':' moved back to pending.'));}
+function del(id){tasks=tasks.filter(t=>t.id!==id);save();render();}
+function switchTab(tab){activeTab=tab;document.getElementById('daily-section').style.display=tab==='daily'?'':'none';document.getElementById('weekly-section').style.display=tab==='weekly'?'':'none';document.getElementById('tab-daily').className='tab'+(tab==='daily'?' active':'');document.getElementById('tab-weekly').className='tab'+(tab==='weekly'?' active':'');}
+function switchView(v){
+  const current=document.querySelector('.view.active');
+  const currentId=current?current.id:'view-dashboard';
+  if(v==='settings' && currentId==='view-settings'){v='dashboard';}
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');
+  const icon=document.getElementById('navToggleIcon');
+  const btn=document.getElementById('navToggleBtn');
+  if(v==='settings'){
+    icon.className='ti ti-layout-dashboard';
+    btn.setAttribute('onclick',"switchView('dashboard')");
+  } else {
+    icon.className='ti ti-settings';
+    btn.setAttribute('onclick',"switchView('settings')");
+  }
+}
+function openAdd(type){document.getElementById('t-type').value=type||activeTab;document.getElementById('t-name').value='';document.getElementById('t-time').value='';document.getElementById('t-prio').value='mid';document.getElementById('addModal').classList.add('open');setTimeout(()=>document.getElementById('t-name').focus(),120);}
+function closeAdd(){document.getElementById('addModal').classList.remove('open');}
+function closeModalOutside(e){if(e.target===document.getElementById('addModal'))closeAdd();}
+function saveTask(){const name=document.getElementById('t-name').value.trim();if(!name)return;const t={id:nid++,name,type:document.getElementById('t-type').value,prio:document.getElementById('t-prio').value,time:document.getElementById('t-time').value,done:false};tasks.push(t);save();render();closeAdd();if(t.type!==activeTab)switchTab(t.type);}
+function toggleSetting(k){cfg[k]=!cfg[k];const el=document.getElementById('toggle-'+k);if(el)el.className='toggle'+(cfg[k]?' on':'');save();}
+function clearAll(){if(confirm('Clear all tasks?')){tasks=[];save();render();}}
+function showAlert(icon,title,msg){document.getElementById('alertIcon').textContent=icon;document.getElementById('alertTitle').textContent=title;document.getElementById('alertMsg').textContent=msg;document.getElementById('alertModal').classList.add('open');}
+function closeAlert(){document.getElementById('alertModal').classList.remove('open');}
+document.getElementById('t-name').addEventListener('keydown',e=>{if(e.key==='Enter')saveTask();});
+applyTheme();setBrightness(cfg.brightness);
+['complete','overdue','summary','upcomingNotif','voiceGuidance'].forEach(k=>{const el=document.getElementById('toggle-'+k);if(el)el.className='toggle'+(cfg[k]?' on':'');});
+function checkUpcomingNotifs(){
+  if(!cfg.upcomingNotif)return;
+  if(!('Notification' in window))return;
+  if(Notification.permission!=='granted'){Notification.requestPermission();return;}
+  const now=new Date();
+  tasks.forEach(t=>{
+    if(t.done||!t.time)return;
+    const[h,m]=t.time.split(':').map(Number);
+    const taskTime=new Date();taskTime.setHours(h,m,0,0);
+    const diff=Math.round((taskTime-now)/60000);
+    if(diff===60&&!t._notif60){t._notif60=true;new Notification('Task in 1 hour',{body:t.name});save();}
+    if(diff===5&&!t._notif5){t._notif5=true;new Notification('Task in 5 minutes',{body:t.name});save();}
+  });
+}
+if('Notification' in window && Notification.permission==='default'){Notification.requestPermission();}
+setInterval(checkUpcomingNotifs,60000);
+greet();render();
+</script>
+<script src="voice.js"></script>
+</body>
+</html>
