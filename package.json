@@ -1,0 +1,16 @@
+{
+  "name": "docket",
+  "version": "1.0.0",
+  "description": "Docket - Voice Task Manager",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo No build step needed"
+  },
+  "dependencies": {
+    "@capacitor/android": "^5.0.0",
+    "@capacitor/core": "^5.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^5.0.0"
+  }
+}
